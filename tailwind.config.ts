@@ -57,6 +57,19 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Space weather specific colors
+        aurora: {
+          green: "hsl(var(--aurora-green))",
+          blue: "hsl(var(--aurora-blue))",
+          purple: "hsl(var(--aurora-purple))",
+        },
+        solar: {
+          orange: "hsl(var(--solar-orange))",
+          red: "hsl(var(--solar-red))",
+        },
+        cosmic: {
+          blue: "hsl(var(--cosmic-blue))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

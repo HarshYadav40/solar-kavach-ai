@@ -2,41 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Surya Kavach - Solar Storm Prediction Dashboard Design System 
+Aurora-themed space weather interface with glass-morphism and cosmic gradients.
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Deep space background with subtle aurora hints */
+    --background: 220 20% 8%;
+    --foreground: 180 100% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Glass-morphism cards with aurora transparency */
+    --card: 220 15% 12%;
+    --card-foreground: 180 50% 90%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 220 20% 10%;
+    --popover-foreground: 180 100% 95%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Aurora green primary - vibrant but not overwhelming */
+    --primary: 160 100% 50%;
+    --primary-foreground: 220 20% 8%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Deep space secondary with aurora hints */
+    --secondary: 220 15% 15%;
+    --secondary-foreground: 180 30% 85%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted space tones */
+    --muted: 220 10% 20%;
+    --muted-foreground: 180 20% 60%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Solar orange accent */
+    --accent: 25 100% 60%;
+    --accent-foreground: 220 20% 8%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Critical solar flare red */
+    --destructive: 0 80% 60%;
+    --destructive-foreground: 180 100% 95%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Subtle aurora borders */
+    --border: 220 15% 25%;
+    --input: 220 15% 18%;
+    --ring: 160 100% 50%;
 
-    --radius: 0.5rem;
+    /* Space weather specific colors */
+    --aurora-green: 160 100% 50%;
+    --aurora-blue: 200 100% 60%;
+    --aurora-purple: 280 100% 70%;
+    --solar-orange: 25 100% 60%;
+    --solar-red: 0 80% 60%;
+    --cosmic-blue: 220 100% 40%;
+    
+    /* Gradients for aurora effects */
+    --aurora-gradient: linear-gradient(135deg, 
+      hsl(160 100% 50% / 0.3) 0%, 
+      hsl(200 100% 60% / 0.2) 50%, 
+      hsl(280 100% 70% / 0.3) 100%);
+    
+    --solar-gradient: linear-gradient(135deg, 
+      hsl(25 100% 60%) 0%, 
+      hsl(0 80% 60%) 100%);
+    
+    --space-gradient: linear-gradient(135deg, 
+      hsl(220 20% 8%) 0%, 
+      hsl(220 30% 12%) 50%, 
+      hsl(220 20% 8%) 100%);
+
+    /* Glass-morphism effects */
+    --glass-bg: hsl(220 15% 12% / 0.8);
+    --glass-border: hsl(180 50% 90% / 0.1);
+    --glass-shadow: 0 8px 32px hsl(0 0% 0% / 0.4);
+
+    /* Aurora animation properties */
+    --aurora-flow: aurora-flow 20s ease-in-out infinite;
+    --aurora-glow: aurora-glow 8s ease-in-out infinite alternate;
+    --solar-pulse: solar-pulse 4s ease-in-out infinite;
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -100,6 +142,121 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overflow-hidden;
+  }
+}
+
+/* Aurora Animation Keyframes */
+@keyframes aurora-flow {
+  0%, 100% { 
+    transform: translateX(-50%) translateY(-10%) rotate(0deg) scale(1);
+    opacity: 0.6;
+  }
+  25% { 
+    transform: translateX(-30%) translateY(-5%) rotate(1deg) scale(1.05);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: translateX(-70%) translateY(-15%) rotate(-1deg) scale(0.95);
+    opacity: 0.7;
+  }
+  75% { 
+    transform: translateX(-40%) translateY(-8%) rotate(0.5deg) scale(1.02);
+    opacity: 0.9;
+  }
+}
+
+@keyframes aurora-glow {
+  0% { 
+    filter: brightness(1) hue-rotate(0deg);
+    transform: scaleY(1);
+  }
+  50% { 
+    filter: brightness(1.2) hue-rotate(30deg);
+    transform: scaleY(1.1);
+  }
+  100% { 
+    filter: brightness(0.9) hue-rotate(-15deg);
+    transform: scaleY(0.9);
+  }
+}
+
+@keyframes solar-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 20px hsl(var(--solar-orange) / 0.5);
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 40px hsl(var(--solar-orange) / 0.8);
+    transform: scale(1.02);
+  }
+}
+
+/* Custom utility classes for space weather UI */
+@layer utilities {
+  .glass-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .aurora-bg {
+    background: var(--aurora-gradient);
+  }
+
+  .solar-bg {
+    background: var(--solar-gradient);
+  }
+
+  .space-bg {
+    background: var(--space-gradient);
+  }
+
+  .aurora-animate {
+    animation: var(--aurora-flow);
+  }
+
+  .aurora-glow {
+    animation: var(--aurora-glow);
+  }
+
+  .solar-pulse {
+    animation: var(--solar-pulse);
+  }
+
+  /* Risk level indicators */
+  .risk-low {
+    color: hsl(var(--aurora-green));
+    background: hsl(var(--aurora-green) / 0.1);
+  }
+
+  .risk-medium {
+    color: hsl(var(--solar-orange));
+    background: hsl(var(--solar-orange) / 0.1);
+  }
+
+  .risk-high {
+    color: hsl(var(--solar-red));
+    background: hsl(var(--solar-red) / 0.1);
+  }
+
+  /* Text effects */
+  .text-aurora {
+    background: linear-gradient(135deg, 
+      hsl(var(--aurora-green)), 
+      hsl(var(--aurora-blue)), 
+      hsl(var(--aurora-purple)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-solar {
+    background: var(--solar-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
