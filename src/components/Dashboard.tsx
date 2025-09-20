@@ -8,95 +8,118 @@ import AlertsPanel from './AlertsPanel';
 const Dashboard = () => {
   return (
     <div className="min-h-screen relative">
-      {/* Aurora background */}
+      {/* Enhanced Aurora background */}
       <AuroraBackground />
       
-      {/* Main content */}
-      <div className="relative z-10 p-6">
-        {/* Header */}
-        <header className="mb-8">
-          <div className="max-w-7xl mx-auto">
-            <h1 className="text-4xl font-bold mb-2">
-              <span className="text-solar">Surya</span>{' '}
-              <span className="text-aurora">Kavach</span>
-            </h1>
-            <p className="text-muted-foreground text-lg">
-              AI-Powered Solar Storm Prediction & Protection Dashboard
-            </p>
-            <div className="flex items-center space-x-4 mt-3">
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <div className="w-2 h-2 rounded-full bg-aurora-green animate-pulse" />
-                <span>Live Monitoring Active</span>
+      {/* App Container with proper scrolling */}
+      <div className="relative z-10">
+        {/* App Header - Fixed navigation */}
+        <header className="sticky top-0 z-50 glass-card border-b border-glass-border backdrop-blur-xl">
+          <div className="max-w-7xl mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <h1 className="text-3xl font-bold">
+                  <span className="text-solar">Surya</span>{' '}
+                  <span className="text-aurora">Kavach</span>
+                </h1>
+                <div className="hidden md:flex items-center space-x-2 text-sm text-muted-foreground">
+                  <div className="w-2 h-2 rounded-full bg-aurora-green animate-pulse" />
+                  <span>Live Monitoring Active</span>
+                </div>
               </div>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <Brain className="w-4 h-4" />
-                <span>AI Analysis: Normal</span>
+              
+              <div className="flex items-center space-x-4">
+                <div className="hidden lg:flex items-center space-x-2 text-sm text-muted-foreground">
+                  <Brain className="w-4 h-4" />
+                  <span>AI Analysis: Normal</span>
+                </div>
+                <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                  <Activity className="w-3 h-3" />
+                  <span>Live</span>
+                </div>
               </div>
             </div>
           </div>
         </header>
 
-        {/* Main grid */}
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Main Application Content */}
+        <main className="px-6 py-8 space-y-8">
+          {/* Mission Control Section */}
+          <section className="max-w-7xl mx-auto">
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold text-aurora mb-2">Mission Control</h2>
+              <p className="text-muted-foreground">AI-Powered Solar Storm Prediction & Protection Dashboard</p>
+            </div>
             
-            {/* Left column - Solar monitoring */}
-            <div className="lg:col-span-4 space-y-6">
-              <SolarDisk />
-              
-              {/* Quick metrics */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-                <SolarFlareCard />
-                <GeomagneticCard />
-                <SatelliteRiskCard />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Solar Activity Monitor */}
+              <div className="lg:col-span-1">
+                <div className="glass-card p-6 mb-6">
+                  <h3 className="text-lg font-semibold mb-4 text-solar">Solar Activity</h3>
+                  <SolarDisk />
+                </div>
+                
+                {/* Quick Status Cards */}
+                <div className="space-y-4">
+                  <SolarFlareCard />
+                  <GeomagneticCard />
+                  <SatelliteRiskCard />
+                </div>
+              </div>
+
+              {/* Real-time Metrics */}
+              <div className="lg:col-span-2">
+                <div className="glass-card p-6 mb-6">
+                  <h3 className="text-lg font-semibold mb-4 text-aurora">Space Weather Metrics</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <SpaceWeatherCard
+                      title="Solar Wind Speed"
+                      value="425"
+                      unit="km/s"
+                      trend="stable"
+                      risk="low"
+                      icon={<Activity className="w-4 h-4" />}
+                      description="Normal solar wind conditions"
+                    />
+                    
+                    <SpaceWeatherCard
+                      title="Plasma Density"
+                      value="6.8"
+                      unit="p/cm³"
+                      trend="down"
+                      risk="low"
+                      icon={<Globe className="w-4 h-4" />}
+                      description="Below average density"
+                    />
+                    
+                    <SpaceWeatherCard
+                      title="Magnetic Field"
+                      value="5.2"
+                      unit="nT"
+                      trend="up"
+                      risk="medium"
+                      icon={<Shield className="w-4 h-4" />}
+                      description="Moderate field strength"
+                    />
+                    
+                    <SpaceWeatherCard
+                      title="X-Ray Flux"
+                      value="C2.1"
+                      trend="stable"
+                      risk="low"
+                      icon={<Zap className="w-4 h-4" />}
+                      description="Background levels normal"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
+          </section>
 
-            {/* Center column - Main metrics and forecasts */}
-            <div className="lg:col-span-5 space-y-6">
-              {/* Key metrics grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <SpaceWeatherCard
-                  title="Solar Wind Speed"
-                  value="425"
-                  unit="km/s"
-                  trend="stable"
-                  risk="low"
-                  icon={<Activity className="w-4 h-4" />}
-                  description="Normal solar wind conditions"
-                />
-                
-                <SpaceWeatherCard
-                  title="Plasma Density"
-                  value="6.8"
-                  unit="p/cm³"
-                  trend="down"
-                  risk="low"
-                  icon={<Globe className="w-4 h-4" />}
-                  description="Below average density"
-                />
-                
-                <SpaceWeatherCard
-                  title="Magnetic Field"
-                  value="5.2"
-                  unit="nT"
-                  trend="up"
-                  risk="medium"
-                  icon={<Shield className="w-4 h-4" />}
-                  description="Moderate field strength"
-                />
-                
-                <SpaceWeatherCard
-                  title="X-Ray Flux"
-                  value="C2.1"
-                  trend="stable"
-                  risk="low"
-                  icon={<Zap className="w-4 h-4" />}
-                  description="Background levels normal"
-                />
-              </div>
-
-              {/* Aurora forecast placeholder */}
+          {/* Forecasting & Analysis Section */}
+          <section className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Aurora Forecast */}
               <div className="glass-card p-6">
                 <h3 className="text-lg font-semibold mb-4 text-aurora">Aurora Visibility Forecast</h3>
                 <div className="aspect-video bg-gradient-to-br from-aurora-green/20 via-aurora-blue/20 to-aurora-purple/20 rounded-lg flex items-center justify-center">
@@ -107,33 +130,28 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Right column - Alerts and AI insights */}
-            <div className="lg:col-span-3 space-y-6">
-              <AlertsPanel />
-              
-              {/* AI Insights placeholder */}
+              {/* AI Insights */}
               <div className="glass-card p-6">
                 <h3 className="text-lg font-semibold mb-4 text-aurora">AI Insights</h3>
-                <div className="space-y-3">
-                  <div className="p-3 bg-muted/20 rounded-lg">
+                <div className="space-y-4">
+                  <div className="p-4 bg-muted/20 rounded-lg">
                     <div className="flex items-center space-x-2 mb-2">
                       <Brain className="w-4 h-4 text-aurora-blue" />
                       <span className="text-sm font-medium">Gemini Analysis</span>
                     </div>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                       Current solar activity shows moderate levels with AR3500 displaying increased magnetic complexity. 
                       Low probability of major flare activity in next 24h.
                     </p>
                   </div>
                   
-                  <div className="p-3 bg-aurora-green/5 border border-aurora-green/20 rounded-lg">
+                  <div className="p-4 bg-aurora-green/5 border border-aurora-green/20 rounded-lg">
                     <div className="flex items-center space-x-2 mb-2">
                       <Shield className="w-4 h-4 text-aurora-green" />
                       <span className="text-sm font-medium">Protection Status</span>
                     </div>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                       All systems nominal. Satellite operations can proceed normally. 
                       Aurora viewing favorable for northern latitudes tonight.
                     </p>
@@ -141,28 +159,38 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          </section>
 
-        {/* Footer status bar */}
-        <footer className="max-w-7xl mx-auto mt-12 glass-card p-4">
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <Satellite className="w-4 h-4" />
-                <span>NASA API: Connected</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Brain className="w-4 h-4" />
-                <span>Gemini AI: Active</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Activity className="w-4 h-4" />
-                <span>Data Update: 2 min ago</span>
-              </div>
+          {/* Alerts & Monitoring Section */}
+          <section className="max-w-7xl mx-auto">
+            <div className="glass-card p-6">
+              <h3 className="text-lg font-semibold mb-4 text-solar">Active Alerts & Monitoring</h3>
+              <AlertsPanel />
             </div>
-            <div className="text-xs">
-              Last Update: {new Date().toLocaleString()}
+          </section>
+        </main>
+
+        {/* App Footer */}
+        <footer className="glass-card border-t border-glass-border mt-12">
+          <div className="max-w-7xl mx-auto px-6 py-6">
+            <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+              <div className="flex flex-wrap items-center justify-center md:justify-start space-x-6 text-sm text-muted-foreground">
+                <div className="flex items-center space-x-2">
+                  <Satellite className="w-4 h-4" />
+                  <span>NASA API: Connected</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Brain className="w-4 h-4" />
+                  <span>Gemini AI: Active</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Activity className="w-4 h-4" />
+                  <span>Data Update: 2 min ago</span>
+                </div>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Last Update: {new Date().toLocaleString()}
+              </div>
             </div>
           </div>
         </footer>
