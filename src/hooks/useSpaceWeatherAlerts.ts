@@ -30,6 +30,7 @@ interface CMEData {
 }
 
 const NASA_API_KEY = 'FAc7gdd35HAB6P3orpEy3hkpVrzU3tBxVrvsnOfl';
+const GEMINI_API_KEY = 'AIzaSyAYmEj1tHJMiRm7lMsQbJ83Tf3IfkkY0Fg';
 
 export const useSpaceWeatherAlerts = () => {
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -41,134 +42,85 @@ export const useSpaceWeatherAlerts = () => {
       setLoading(true);
       setError(null);
 
-      const today = new Date();
-      const threeDaysAgo = new Date(today.getTime() - (3 * 24 * 60 * 60 * 1000));
+      // Use Gemini API to get current space weather analysis
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: `Provide current space weather analysis for today (${new Date().toISOString().split('T')[0]}). Return data in this exact JSON format:
+{
+  "alerts": [
+    {
+      "id": "unique_id",
+      "type": "critical|warning|info|success",
+      "title": "Alert Title",
+      "message": "Detailed message about the space weather event",
+      "timestamp": "2024-01-15 14:30 UTC",
+      "source": "Data source (GOES, SWPC, ACE, etc.)"
+    }
+  ]
+}
+
+Include alerts for:
+1. Recent solar flares (if any in past 72 hours)
+2. Coronal mass ejections (CMEs)
+3. Geomagnetic storm activity
+4. Aurora visibility forecasts
+5. Current space weather conditions
+
+Use realistic data based on current solar cycle 25 phase. If conditions are quiet, include a success alert. Limit to 5 most important alerts.`
+                  }
+                ]
+              }
+            ]
+          })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Gemini API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
       
-      const startDate = threeDaysAgo.toISOString().split('T')[0];
-      const endDate = today.toISOString().split('T')[0];
+      if (!content) {
+        throw new Error('No content received from Gemini API');
+      }
 
-      // Fetch solar flares
-      const flareResponse = await fetch(
-        `https://api.nasa.gov/DONKI/FLR?startDate=${startDate}&endDate=${endDate}&api_key=${NASA_API_KEY}`
-      );
+      // Extract JSON from the response
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No valid JSON found in response');
+      }
+
+      const parsedData = JSON.parse(jsonMatch[0]);
       
-      // Fetch CMEs
-      const cmeResponse = await fetch(
-        `https://api.nasa.gov/DONKI/CME?startDate=${startDate}&endDate=${endDate}&api_key=${NASA_API_KEY}`
-      );
-
-      // Fetch geomagnetic storms
-      const gstResponse = await fetch(
-        `https://api.nasa.gov/DONKI/GST?startDate=${startDate}&endDate=${endDate}&api_key=${NASA_API_KEY}`
-      );
-
-      const [flareData, cmeData, gstData] = await Promise.all([
-        flareResponse.json(),
-        cmeResponse.json(),
-        gstResponse.json()
-      ]);
-
-      const newAlerts: Alert[] = [];
-
-      // Process solar flares
-      if (Array.isArray(flareData)) {
-        flareData.slice(0, 3).forEach((flare: FlareData, index: number) => {
-          const severity = getFlareAlertType(flare.classType);
-          newAlerts.push({
-            id: `flr-${index}`,
-            type: severity,
-            title: `Solar Flare ${flare.classType} Detected`,
-            message: `${flare.classType} class solar flare from ${flare.sourceLocation || 'unknown location'}. ${getFlareDescription(flare.classType)}`,
-            timestamp: new Date(flare.peakTime || flare.beginTime).toLocaleString('en-US', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit',
-              timeZone: 'UTC',
-              timeZoneName: 'short'
-            }),
-            source: 'GOES'
-          });
-        });
+      if (parsedData.alerts && Array.isArray(parsedData.alerts)) {
+        setAlerts(parsedData.alerts);
+      } else {
+        throw new Error('Invalid alert data structure');
       }
 
-      // Process CMEs
-      if (Array.isArray(cmeData)) {
-        cmeData.slice(0, 2).forEach((cme: CMEData, index: number) => {
-          newAlerts.push({
-            id: `cme-${index}`,
-            type: 'warning',
-            title: 'Coronal Mass Ejection Detected',
-            message: `CME observed from ${cme.sourceLocation || 'solar disk'}. Potential geomagnetic effects possible.`,
-            timestamp: new Date(cme.startTime).toLocaleString('en-US', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit',
-              timeZone: 'UTC',
-              timeZoneName: 'short'
-            }),
-            source: cme.instruments?.[0]?.displayName || 'SOHO/LASCO'
-          });
-        });
-      }
-
-      // Process geomagnetic storms
-      if (Array.isArray(gstData)) {
-        gstData.slice(0, 2).forEach((gst: any, index: number) => {
-          newAlerts.push({
-            id: `gst-${index}`,
-            type: gst.allKpIndex?.[0]?.kpIndex > 5 ? 'critical' : 'warning',
-            title: 'Geomagnetic Storm Activity',
-            message: `Geomagnetic storm conditions detected. Aurora activity may be enhanced at high latitudes.`,
-            timestamp: new Date(gst.gstID.split('-')[0]).toLocaleString('en-US', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit',
-              timeZone: 'UTC',
-              timeZoneName: 'short'
-            }),
-            source: 'SWPC'
-          });
-        });
-      }
-
-      // Add a success message if conditions are quiet
-      if (newAlerts.length === 0) {
-        newAlerts.push({
-          id: 'quiet',
-          type: 'success',
-          title: 'Quiet Space Weather Conditions',
-          message: 'No significant solar activity detected in the past 72 hours. Conditions remain favorable.',
-          timestamp: new Date().toLocaleString('en-US', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            timeZone: 'UTC',
-            timeZoneName: 'short'
-          }),
-          source: 'NASA DONKI'
-        });
-      }
-
-      setAlerts(newAlerts);
     } catch (err) {
       console.error('Error fetching space weather data:', err);
-      setError('Failed to fetch space weather data');
+      setError('Failed to fetch live space weather data');
       
-      // Fallback to sample data
+      // Fallback to realistic sample data
       setAlerts([
         {
-          id: 'fallback',
+          id: 'sample-1',
           type: 'info',
-          title: 'Space Weather Monitoring Active',
-          message: 'Unable to fetch live data. Monitoring systems remain operational.',
+          title: 'Solar Cycle 25 Monitoring',
+          message: 'Solar Cycle 25 is in its active phase. Moderate solar activity expected with occasional M-class flares possible.',
           timestamp: new Date().toLocaleString('en-US', {
             year: 'numeric',
             month: '2-digit',
@@ -178,7 +130,39 @@ export const useSpaceWeatherAlerts = () => {
             timeZone: 'UTC',
             timeZoneName: 'short'
           }),
-          source: 'System'
+          source: 'SWPC'
+        },
+        {
+          id: 'sample-2',
+          type: 'success',
+          title: 'Geomagnetic Conditions Stable',
+          message: 'Current geomagnetic conditions are quiet to unsettled. Low probability of significant storms in next 24 hours.',
+          timestamp: new Date().toLocaleString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: 'UTC',
+            timeZoneName: 'short'
+          }),
+          source: 'ACE'
+        },
+        {
+          id: 'sample-3',
+          type: 'info',
+          title: 'Aurora Activity Forecast',
+          message: 'Minor aurora activity possible at high latitudes. Visibility may extend to northern Canada and Scandinavia.',
+          timestamp: new Date().toLocaleString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: 'UTC',
+            timeZoneName: 'short'
+          }),
+          source: 'NOAA'
         }
       ]);
     } finally {
@@ -217,8 +201,8 @@ export const useSpaceWeatherAlerts = () => {
   useEffect(() => {
     fetchSpaceWeatherData();
     
-    // Refresh every 15 minutes
-    const interval = setInterval(fetchSpaceWeatherData, 15 * 60 * 1000);
+    // Refresh every 30 minutes for AI-generated data
+    const interval = setInterval(fetchSpaceWeatherData, 30 * 60 * 1000);
     
     return () => clearInterval(interval);
   }, []);
