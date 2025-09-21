@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Bell, AlertTriangle, Info, CheckCircle } from 'lucide-react';
+import { Bell, AlertTriangle, Info, CheckCircle, RefreshCw, Loader2 } from 'lucide-react';
+import { useSpaceWeatherAlerts } from '@/hooks/useSpaceWeatherAlerts';
 
 interface Alert {
   id: string;
@@ -13,33 +14,7 @@ interface Alert {
 }
 
 const AlertsPanel = ({ className }: { className?: string }) => {
-  // Mock alert data
-  const alerts: Alert[] = [
-    {
-      id: '1',
-      type: 'warning',
-      title: 'Solar Flare M2.1 Detected',
-      message: 'Moderate solar flare activity from Active Region AR3500. Minor radio blackouts possible.',
-      timestamp: '2024-01-15 14:30 UTC',
-      source: 'GOES-16'
-    },
-    {
-      id: '2',
-      type: 'info',
-      title: 'Aurora Visibility Forecast',
-      message: 'Enhanced aurora activity expected in northern regions tonight. Visibility possible down to 55°N.',
-      timestamp: '2024-01-15 12:15 UTC',
-      source: 'SWPC'
-    },
-    {
-      id: '3',
-      type: 'success',
-      title: 'Geomagnetic Storm Subsiding',
-      message: 'Minor G1 storm conditions are weakening. Return to quiet conditions expected.',
-      timestamp: '2024-01-15 10:45 UTC',
-      source: 'ACE'
-    }
-  ];
+  const { alerts, loading, error, refetch } = useSpaceWeatherAlerts();
 
   const getAlertIcon = (type: Alert['type']) => {
     switch (type) {
@@ -64,14 +39,32 @@ const AlertsPanel = ({ className }: { className?: string }) => {
   return (
     <Card className={`glass-card p-6 ${className}`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-aurora">Space Weather Alerts</h3>
+        <h3 className="text-lg font-semibold text-aurora">Live Space Weather Alerts</h3>
         <div className="flex items-center space-x-2">
+          <button
+            onClick={refetch}
+            disabled={loading}
+            className="p-1 rounded-md hover:bg-card/50 transition-colors"
+            title="Refresh alerts"
+          >
+            {loading ? (
+              <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
+            ) : (
+              <RefreshCw className="w-4 h-4 text-muted-foreground hover:text-aurora" />
+            )}
+          </button>
           <Bell className="w-4 h-4 text-muted-foreground" />
           <Badge variant="outline" className="text-xs">
             {alerts.length} Active
           </Badge>
         </div>
       </div>
+      
+      {error && (
+        <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+          <p className="text-sm text-destructive">{error}</p>
+        </div>
+      )}
       
       <div className="space-y-3 max-h-96 overflow-y-auto">
         {alerts.map((alert) => (

@@ -138,7 +138,7 @@ const Dashboard = () => {
                   <div className="p-4 bg-muted/20 rounded-lg">
                     <div className="flex items-center space-x-2 mb-2">
                       <Brain className="w-4 h-4 text-aurora-blue" />
-                      <span className="text-sm font-medium">Gemini Analysis</span>
+                      <span className="text-sm font-medium">AI Analysis</span>
                     </div>
                     <p className="text-sm text-muted-foreground">
                       Current solar activity shows moderate levels with AR3500 displaying increased magnetic complexity. 
@@ -181,7 +181,7 @@ const Dashboard = () => {
                 </div>
                 <div className="flex items-center space-x-2">
                   <Brain className="w-4 h-4" />
-                  <span>Gemini AI: Active</span>
+                  <span>AI System: Active</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Activity className="w-4 h-4" />
